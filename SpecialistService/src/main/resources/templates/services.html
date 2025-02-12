@@ -1,10 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Услуги</title>
 </head>
 <body>
-$END$
+<h1>Услуги</h1>
+
+<h3>Добавить новую услугу</h3>
+<form id="addServiceForm">
+    <label for="specialistId">ID специалиста:</label>
+    <input type="text" id="specialistId" name="specialistId" required><br>
+
+    <label for="serviceName">Название услуги:</label>
+    <input type="text" id="serviceName" name="serviceName" required><br>
+
+    <label for="price">Цена:</label>
+    <input type="number" id="price" name="price" required step="0.01"><br>
+
+    <input type="submit" value="Добавить услугу">
+</form>
+
+<hr>
+
+<h3>Список услуг</h3>
+<ul id="serviceList">
+</ul>
+
+<hr>
+
+<h3>Редактировать услугу</h3>
+<form id="editServiceForm" style="display: none;">
+    <input type="hidden" id="editServiceId">
+    <label for="editServiceName">Название услуги:</label>
+    <input type="text" id="editServiceName" name="serviceName" required><br>
+
+    <label for="editPrice">Цена:</label>
+    <input type="number" id="editPrice" name="price" required step="0.01"><br>
+
+    <input type="submit" value="Сохранить изменения">
+</form>
+
+<script>
+    function fetchServices() {
+        fetch("http://localhost:8082/api/services")
+            .then(response => response.json())
+            .then(services => {
+                const serviceList = document.getElementById("serviceList");
+                serviceList.innerHTML = '';
+                services.forEach(service => {
+                    const li = document.createElement("li");
+                    li.textContent = `${service.serviceName} - ${service.price}`;
+
+                    const editButton = document.createElement("button");
+                    editButton.textContent = "Редактировать";
+                    editButton.onclick = () => editService(service.id);
+                    li.appendChild(editButton);
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Удалить";
+                    deleteButton.onclick = () => deleteService(service.id);
+                    li.appendChild(deleteButton);
+
+                    serviceList.appendChild(li);
+                });
+            });
+    }
+
+    document.getElementById("addServiceForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const serviceData = {
+            specialistId: formData.get("specialistId"),
+            serviceName: formData.get("serviceName"),
+            price: parseFloat(formData.get("price"))
+        };
+
+        fetch("http://localhost:8082/api/services?specialistId=" + serviceData.specialistId, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(serviceData)
+        })
+            .then(response => response.json())
+            .then(() => fetchServices());
+    });
+
+    function deleteService(serviceId) {
+        fetch(`http://localhost:8082/api/services/${serviceId}`, {
+            method: "DELETE"
+        })
+            .then(() => fetchServices());
+    }
+
+    function editService(serviceId) {
+        fetch(`http://localhost:8082/api/services/${serviceId}`)
+            .then(response => response.json())
+            .then(service => {
+                document.getElementById("editServiceForm").style.display = "block";
+                document.getElementById("editServiceId").value = service.id;
+                document.getElementById("editServiceName").value = service.serviceName;
+                document.getElementById("editPrice").value = service.price;
+            });
+    }
+
+    document.getElementById("editServiceForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const serviceData = {
+            serviceName: formData.get("serviceName"),
+            price: parseFloat(formData.get("price"))
+        };
+
+        const serviceId = document.getElementById("editServiceId").value;
+
+        fetch(`http://localhost:8082/api/services/${serviceId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(serviceData)
+        })
+            .then(response => response.json())
+            .then(() => {
+                fetchServices();
+                document.getElementById("editServiceForm").reset();
+                document.getElementById("editServiceForm").style.display = "none";
+            });
+    });
+
+    fetchServices();
+</script>
 </body>
 </html>

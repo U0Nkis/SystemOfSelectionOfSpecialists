@@ -1,14 +1,15 @@
 package ru.vsu.cs.trufanov.clientservice.Controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ClientPageController {
 
     @GetMapping("/clients")
+    @ResponseBody
     public String clientsPage() {
-        return "clients"; // Возвращает страницу clients.html
+        return "clients";
     }
 }

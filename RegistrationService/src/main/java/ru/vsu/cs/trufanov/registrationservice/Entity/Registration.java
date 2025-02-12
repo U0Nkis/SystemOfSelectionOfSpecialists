@@ -35,5 +35,4 @@ public class Registration {
     @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "registration_date")
     private Instant registrationDate;
-
 }

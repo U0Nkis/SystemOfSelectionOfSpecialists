@@ -11,10 +11,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/clients")
-public class ClientController {
+public class ClientRestController {
     private final ClientService service;
 
-    public ClientController(ClientService service) {
+    public ClientRestController(ClientService service) {
         this.service = service;
     }
 

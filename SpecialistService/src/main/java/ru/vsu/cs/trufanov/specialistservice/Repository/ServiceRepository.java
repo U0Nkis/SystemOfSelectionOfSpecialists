@@ -1,4 +1,9 @@
 package ru.vsu.cs.trufanov.specialistservice.Repository;
 
-public interface SserviceRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import ru.vsu.cs.trufanov.specialistservice.Entity.Service;
+
+import java.util.UUID;
+
+public interface ServiceRepository extends JpaRepository<Service, UUID> {
 }

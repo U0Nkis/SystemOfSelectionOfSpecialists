@@ -27,6 +27,26 @@
 
 <hr>
 
+<h3>Редактировать клиента</h3>
+<form id="editClientForm" style="display:none;">
+    <input type="hidden" id="editClientId">
+    <label for="editFullName">ФИО:</label>
+    <input type="text" id="editFullName" name="fullName" required><br>
+
+    <label for="editEmail">Email:</label>
+    <input type="email" id="editEmail" name="email" required><br>
+
+    <label for="editPhone">Телефон:</label>
+    <input type="text" id="editPhone" name="phone" required><br>
+
+    <label for="editCity">Город:</label>
+    <input type="text" id="editCity" name="city" required><br>
+
+    <input type="submit" value="Сохранить изменения">
+</form>
+
+<hr>
+
 <h3>Список клиентов</h3>
 <ul id="clientList">
 </ul>
@@ -41,6 +61,7 @@
                 clients.forEach(client => {
                     const li = document.createElement("li");
                     li.textContent = `${client.fullName} - ${client.email}`;
+
                     const editButton = document.createElement("button");
                     editButton.textContent = "Редактировать";
                     editButton.onclick = () => editClient(client.id);
@@ -78,7 +99,6 @@
             .then(() => fetchClients());
     });
 
-    // Удаление клиента
     function deleteClient(clientId) {
         fetch(`http://localhost:8081/api/clients/${clientId}`, {
             method: "DELETE"
@@ -86,10 +106,46 @@
             .then(() => fetchClients());
     }
 
-    // Редактирование клиента
     function editClient(clientId) {
-        alert("Редактировать клиента с id: " + clientId);
+        fetch(`http://localhost:8081/api/clients/${clientId}`)
+            .then(response => response.json())
+            .then(client => {
+                document.getElementById("editClientId").value = client.id;
+                document.getElementById("editFullName").value = client.fullName;
+                document.getElementById("editEmail").value = client.email;
+                document.getElementById("editPhone").value = client.phone;
+                document.getElementById("editCity").value = client.city;
+
+                // Показать форму редактирования
+                document.getElementById("editClientForm").style.display = "block";
+            });
     }
+
+    document.getElementById("editClientForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const clientId = document.getElementById("editClientId").value;
+        const formData = new FormData(event.target);
+        const clientData = {
+            fullName: formData.get("fullName"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
+            city: formData.get("city")
+        };
+
+        fetch(`http://localhost:8081/api/clients/${clientId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(clientData)
+        })
+            .then(response => response.json())
+            .then(() => {
+                fetchClients();
+                document.getElementById("editClientForm").style.display = "none";
+            });
+    });
 
     fetchClients();
 </script>
