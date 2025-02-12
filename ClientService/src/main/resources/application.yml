@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://clients-db:5432/clients_db
+    username: postgres
+    password: 0000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+rest:
+  specialist-service-url: http://specialist-service/api/specialists
+  registration-service-url: http://registration-service/api/registrations

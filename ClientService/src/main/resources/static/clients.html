@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клиенты</title>
+</head>
+<body>
+<h1>Клиенты</h1>
+
+<h3>Добавить нового клиента</h3>
+<form id="addClientForm">
+    <label for="fullName">ФИО:</label>
+    <input type="text" id="fullName" name="fullName" required><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br>
+
+    <label for="phone">Телефон:</label>
+    <input type="text" id="phone" name="phone" required><br>
+
+    <label for="city">Город:</label>
+    <input type="text" id="city" name="city" required><br>
+
+    <input type="submit" value="Добавить клиента">
+</form>
+
+<hr>
+
+<h3>Список клиентов</h3>
+<ul id="clientList">
+</ul>
+
+<script>
+    function fetchClients() {
+        fetch("http://localhost:8081/api/clients")
+            .then(response => response.json())
+            .then(clients => {
+                const clientList = document.getElementById("clientList");
+                clientList.innerHTML = '';
+                clients.forEach(client => {
+                    const li = document.createElement("li");
+                    li.textContent = `${client.fullName} - ${client.email}`;
+                    const editButton = document.createElement("button");
+                    editButton.textContent = "Редактировать";
+                    editButton.onclick = () => editClient(client.id);
+                    li.appendChild(editButton);
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Удалить";
+                    deleteButton.onclick = () => deleteClient(client.id);
+                    li.appendChild(deleteButton);
+
+                    clientList.appendChild(li);
+                });
+            });
+    }
+
+    document.getElementById("addClientForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const clientData = {
+            fullName: formData.get("fullName"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
+            city: formData.get("city")
+        };
+
+        fetch("http://localhost:8081/api/clients", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(clientData)
+        })
+            .then(response => response.json())
+            .then(() => fetchClients());
+    });
+
+    // Удаление клиента
+    function deleteClient(clientId) {
+        fetch(`http://localhost:8081/api/clients/${clientId}`, {
+            method: "DELETE"
+        })
+            .then(() => fetchClients());
+    }
+
+    // Редактирование клиента
+    function editClient(clientId) {
+        alert("Редактировать клиента с id: " + clientId);
+    }
+
+    fetchClients();
+</script>
+</body>
+</html>
