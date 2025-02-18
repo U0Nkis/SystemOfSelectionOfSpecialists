@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление регистрации</title>
+</head>
+<body>
+<h1>Добавление регистрации</h1>
+
+<form id="addRegistrationForm">
+    <label for="clientId">ID клиента:</label>
+    <input type="text" id="clientId" name="clientId" required><br>
+
+    <label for="specialistId">ID специалиста:</label>
+    <input type="text" id="specialistId" name="specialistId" required><br>
+
+    <label for="serviceId">ID услуги:</label>
+    <input type="text" id="serviceId" name="serviceId" required><br>
+
+    <input type="submit" value="Добавить регистрацию">
+</form>
+
+<p id="responseMessage"></p>
+
+<script>
+    document.getElementById("addRegistrationForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const clientId = document.getElementById("clientId").value;
+        const specialistId = document.getElementById("specialistId").value;
+        const serviceId = document.getElementById("serviceId").value;
+
+        const registrationData = {
+            clientId: clientId,
+            specialistId: specialistId,
+            serviceId: serviceId
+        };
+
+        fetch("/api/registrations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(registrationData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Ошибка при добавлении регистрации");
+                }
+            })
+            .then(data => {
+                document.getElementById("responseMessage").textContent = "Регистрация успешно добавлена!";
+                document.getElementById("responseMessage").style.color = "green";
+            })
+            .catch(error => {
+                document.getElementById("responseMessage").textContent = error.message;
+                document.getElementById("responseMessage").style.color = "red";
+            });
+    });
+</script>
+</body>
+</html>

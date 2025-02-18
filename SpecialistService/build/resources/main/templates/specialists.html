@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Специалисты</title>
+</head>
+<body>
+<h1>Специалисты</h1>
+
+<h3>Добавить нового специалиста</h3>
+<form id="addSpecialistForm">
+    <label for="fullName">ФИО:</label>
+    <input type="text" id="fullName" name="fullName" required><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br>
+
+    <label for="phone">Телефон:</label>
+    <input type="text" id="phone" name="phone" required><br>
+
+    <label for="city">Город:</label>
+    <input type="text" id="city" name="city" required><br>
+
+    <input type="submit" value="Добавить специалиста">
+</form>
+
+<hr>
+
+<h3>Список специалистов</h3>
+<ul id="specialistList">
+</ul>
+
+<hr>
+
+<h3>Редактировать специалиста</h3>
+<form id="editSpecialistForm" style="display: none;">
+    <input type="hidden" id="editId">
+    <label for="editFullName">ФИО:</label>
+    <input type="text" id="editFullName" name="fullName" required><br>
+
+    <label for="editEmail">Email:</label>
+    <input type="email" id="editEmail" name="email" required><br>
+
+    <label for="editPhone">Телефон:</label>
+    <input type="text" id="editPhone" name="phone" required><br>
+
+    <label for="editCity">Город:</label>
+    <input type="text" id="editCity" name="city" required><br>
+
+    <input type="submit" value="Сохранить изменения">
+</form>
+
+<script>
+    function fetchSpecialists() {
+        fetch("http://localhost:8082/api/specialists")
+            .then(response => response.json())
+            .then(specialists => {
+                const specialistList = document.getElementById("specialistList");
+                specialistList.innerHTML = '';
+                specialists.forEach(specialist => {
+                    const li = document.createElement("li");
+                    li.textContent = `${specialist.fullName} - ${specialist.email}`;
+
+                    const editButton = document.createElement("button");
+                    editButton.textContent = "Редактировать";
+                    editButton.onclick = () => editSpecialist(specialist.id);
+                    li.appendChild(editButton);
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Удалить";
+                    deleteButton.onclick = () => deleteSpecialist(specialist.id);
+                    li.appendChild(deleteButton);
+
+                    specialistList.appendChild(li);
+                });
+            });
+    }
+
+    document.getElementById("addSpecialistForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const specialistData = {
+            fullName: formData.get("fullName"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
+            city: formData.get("city")
+        };
+
+        fetch("http://localhost:8082/api/specialists", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(specialistData)
+        })
+            .then(response => response.json())
+            .then(() => fetchSpecialists());
+    });
+
+    function deleteSpecialist(specialistId) {
+        fetch(`http://localhost:8082/api/specialists/${specialistId}`, {
+            method: "DELETE"
+        })
+            .then(() => fetchSpecialists());
+    }
+
+    function editSpecialist(specialistId) {
+        fetch(`http://localhost:8082/api/specialists/${specialistId}`)
+            .then(response => response.json())
+            .then(specialist => {
+                document.getElementById("editSpecialistForm").style.display = "block";
+                document.getElementById("editId").value = specialist.id;
+                document.getElementById("editFullName").value = specialist.fullName;
+                document.getElementById("editEmail").value = specialist.email;
+                document.getElementById("editPhone").value = specialist.phone;
+                document.getElementById("editCity").value = specialist.city;
+            });
+    }
+
+    document.getElementById("editSpecialistForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const specialistData = {
+            fullName: formData.get("fullName"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
+            city: formData.get("city")
+        };
+
+        const specialistId = document.getElementById("editId").value;
+
+        fetch(`http://localhost:8082/api/specialists/${specialistId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(specialistData)
+        })
+            .then(response => response.json())
+            .then(() => {
+                fetchSpecialists();
+                document.getElementById("editSpecialistForm").reset();
+                document.getElementById("editSpecialistForm").style.display = "none";
+            });
+    });
+
+    fetchSpecialists();
+</script>
+</body>
+</html>

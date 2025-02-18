@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Управление регистрациями</title>
+</head>
+<body>
+<h1>Управление регистрациями</h1>
+
+<h2>Добавить регистрацию</h2>
+<form id="addRegistrationForm">
+    <label for="clientId">ID клиента:</label>
+    <input type="text" id="clientId" name="clientId" required><br>
+
+    <label for="specialistId">ID специалиста:</label>
+    <input type="text" id="specialistId" name="specialistId" required><br>
+
+    <label for="serviceId">ID услуги:</label>
+    <input type="text" id="serviceId" name="serviceId" required><br>
+
+    <input type="submit" value="Добавить регистрацию">
+</form>
+<p id="addResponseMessage"></p>
+
+<h2>Список регистраций</h2>
+<ul id="registrationList"></ul>
+
+<script>
+    function fetchRegistrations() {
+        fetch("/api/registrations")
+            .then(response => response.json())
+            .then(registrations => {
+                const registrationList = document.getElementById("registrationList");
+                registrationList.innerHTML = ''; // Очистить список перед обновлением
+
+                registrations.forEach(registration => {
+                    const listItem = document.createElement("li");
+                    listItem.classList.add("registration-item");
+
+                    const details = document.createElement("div");
+                    details.innerHTML = `
+                        <span><b>ID:</b> ${registration.id}</span>
+                        <span><b>Клиент:</b> ${registration.clientId}</span>
+                        <span><b>Специалист:</b> ${registration.specialistId}</span>
+                        <span><b>Услуга:</b> ${registration.serviceId}</span>
+                        <span><b>Дата:</b> ${registration.registrationDate}</span>
+                    `;
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Удалить";
+                    deleteButton.addEventListener("click", () => deleteRegistration(registration.id));
+
+                    listItem.appendChild(details);
+                    listItem.appendChild(deleteButton);
+                    registrationList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error("Ошибка при получении регистраций:", error));
+    }
+
+    function deleteRegistration(id) {
+        fetch(`/api/registrations/${id}`, {
+            method: "DELETE"
+        })
+            .then(response => {
+                if (response.ok) {
+                    fetchRegistrations();
+                } else {
+                    throw new Error("Ошибка при удалении регистрации");
+                }
+            })
+            .catch(error => console.error("Ошибка при удалении регистрации:", error));
+    }
+
+    document.getElementById("addRegistrationForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const clientId = document.getElementById("clientId").value;
+        const specialistId = document.getElementById("specialistId").value;
+        const serviceId = document.getElementById("serviceId").value;
+
+        const registrationData = {
+            clientId: clientId,
+            specialistId: specialistId,
+            serviceId: serviceId
+        };
+
+        fetch("/api/registrations", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(registrationData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById("addResponseMessage").textContent = "Регистрация успешно добавлена!";
+                    document.getElementById("addResponseMessage").style.color = "green";
+                    fetchRegistrations(); // Обновить список после добавления
+                } else {
+                    throw new Error("Ошибка при добавлении регистрации");
+                }
+            })
+            .catch(error => {
+                document.getElementById("addResponseMessage").textContent = error.message;
+                document.getElementById("addResponseMessage").style.color = "red";
+            });
+    });
+
+    fetchRegistrations();
+</script>
+</body>
+</html>
