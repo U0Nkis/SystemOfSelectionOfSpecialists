@@ -1,9 +1,10 @@
 server:
+  address: 0.0.0.0
   port: 8081
 
 spring:
   datasource:
-    url: jdbc:postgresql://clients-db:5432/clients_db
+    url: jdbc:postgresql://postgres:5432/main_db
     username: postgres
     password: 0000
   jpa:
@@ -12,5 +13,5 @@ spring:
     show-sql: true
 
 rest:
-  specialist-service-url: http://specialist-service/api/specialists
-  registration-service-url: http://registration-service/api/registrations
+  specialist-service-url: http://127.0.0.1:8082/api/specialists
+  registration-service-url: http://127.0.0.1:8083/api/registrations

@@ -56,11 +56,13 @@
                     const editButton = document.createElement("button");
                     editButton.textContent = "Редактировать";
                     editButton.onclick = () => editService(service.id);
+                    editButton.style.marginLeft = "50px";
                     li.appendChild(editButton);
 
                     const deleteButton = document.createElement("button");
                     deleteButton.textContent = "Удалить";
                     deleteButton.onclick = () => deleteService(service.id);
+                    deleteButton.style.marginLeft = "50px";
                     li.appendChild(deleteButton);
 
                     serviceList.appendChild(li);

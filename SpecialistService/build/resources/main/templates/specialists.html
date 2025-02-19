@@ -65,11 +65,13 @@
                     const editButton = document.createElement("button");
                     editButton.textContent = "Редактировать";
                     editButton.onclick = () => editSpecialist(specialist.id);
+                    editButton.style.marginLeft = "50px";
                     li.appendChild(editButton);
 
                     const deleteButton = document.createElement("button");
                     deleteButton.textContent = "Удалить";
                     deleteButton.onclick = () => deleteSpecialist(specialist.id);
+                    deleteButton.style.marginLeft = "50px";
                     li.appendChild(deleteButton);
 
                     specialistList.appendChild(li);

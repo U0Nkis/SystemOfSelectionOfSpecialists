@@ -65,11 +65,13 @@
                     const editButton = document.createElement("button");
                     editButton.textContent = "Редактировать";
                     editButton.onclick = () => editClient(client.id);
+                    editButton.style.marginLeft = "10px"; // Добавляем отступ с помощью инлайнового стиля
                     li.appendChild(editButton);
 
                     const deleteButton = document.createElement("button");
                     deleteButton.textContent = "Удалить";
                     deleteButton.onclick = () => deleteClient(client.id);
+                    deleteButton.style.marginLeft = "10px"; // Добавляем отступ с помощью инлайнового стиля
                     li.appendChild(deleteButton);
 
                     clientList.appendChild(li);
@@ -116,7 +118,6 @@
                 document.getElementById("editPhone").value = client.phone;
                 document.getElementById("editCity").value = client.city;
 
-                // Показать форму редактирования
                 document.getElementById("editClientForm").style.display = "block";
             });
     }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin(origins = {"http://127.0.0.1:8081", "http://localhost:8081"})
 @RestController
 @RequestMapping("/api/clients")
 public class ClientRestController {

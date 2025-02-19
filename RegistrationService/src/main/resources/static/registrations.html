@@ -32,7 +32,7 @@
             .then(response => response.json())
             .then(registrations => {
                 const registrationList = document.getElementById("registrationList");
-                registrationList.innerHTML = ''; // Очистить список перед обновлением
+                registrationList.innerHTML = '';
 
                 registrations.forEach(registration => {
                     const listItem = document.createElement("li");
@@ -97,7 +97,7 @@
                 if (response.ok) {
                     document.getElementById("addResponseMessage").textContent = "Регистрация успешно добавлена!";
                     document.getElementById("addResponseMessage").style.color = "green";
-                    fetchRegistrations(); // Обновить список после добавления
+                    fetchRegistrations();
                 } else {
                     throw new Error("Ошибка при добавлении регистрации");
                 }
