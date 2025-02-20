@@ -60,18 +60,21 @@
                 specialistList.innerHTML = '';
                 specialists.forEach(specialist => {
                     const li = document.createElement("li");
-                    li.textContent = `${specialist.fullName} - ${specialist.email}`;
+                    li.innerHTML = `<strong>${specialist.fullName}</strong><br>
+                                    Email: ${specialist.email}<br>
+                                    Телефон: ${specialist.phone}<br>
+                                    Город: ${specialist.city}`;
 
                     const editButton = document.createElement("button");
                     editButton.textContent = "Редактировать";
                     editButton.onclick = () => editSpecialist(specialist.id);
-                    editButton.style.marginLeft = "50px";
+                    editButton.style.marginLeft = "20px";
                     li.appendChild(editButton);
 
                     const deleteButton = document.createElement("button");
                     deleteButton.textContent = "Удалить";
                     deleteButton.onclick = () => deleteSpecialist(specialist.id);
-                    deleteButton.style.marginLeft = "50px";
+                    deleteButton.style.marginLeft = "10px";
                     li.appendChild(deleteButton);
 
                     specialistList.appendChild(li);
